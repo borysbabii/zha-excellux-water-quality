@@ -13,14 +13,20 @@ Status of each DP:
   * DP 124 -> TDS   (ppm)      CONFIRMED
   * DP 127 -> EC    (uS/cm)    CONFIRMED (DP 127 == 2 x DP 124, the standard
                                TDS = 0.5 x EC relationship)
-  * DP 2   -> pH               CANDIDATE, divisor 10  (reads ~5.5)
   * DP 118 -> ORP   (mV)       CANDIDATE, divisor 10  (reads ~550 mV, drops
                                after carbon filtering, which fits chlorine loss)
+  * DP 2   -> unknown          was a pH CANDIDATE, but stays in a tight 50-55
+                               band and even rose slightly under strong acid
+                               (lemon, vinegar). pH must fall with acid, so
+                               DP 2 is NOT pH. Left raw.
   * DP 5   -> unknown          CANDIDATE for temperature, but stays ~25 (raw
                                ~2500) even in water known to be warmer than
                                25 C, so it does NOT track water temperature.
                                Left raw.
-  * DP 1   -> unknown          does NOT collapse in air, so not a live probe
+  * DP 1   -> unknown          does NOT collapse in air, so not a live probe.
+                               No clean pH response either.
+  * pH / salinity / chlorine   NOT identified over Zigbee on this unit. No live
+                               datapoint fell with acid the way pH must.
   * others (constant)          alarm limits and mode flags, exposed as
                                diagnostics so you can compare with your display
 
@@ -71,15 +77,7 @@ builder = (
         translation_key="ec",
         fallback_name="EC",
     )
-    # --- candidate measurements, exposed raw so you can confirm the divisor ---
-    .tuya_sensor(
-        dp_id=2,
-        attribute_name="ph_raw",
-        type=t.uint32_t,
-        state_class=SensorStateClass.MEASUREMENT,
-        translation_key="ph_raw",
-        fallback_name="pH (raw, /10?)",
-    )
+    # --- candidate measurement, exposed raw so you can confirm the divisor ---
     .tuya_sensor(
         dp_id=118,
         attribute_name="orp_raw",
@@ -87,6 +85,16 @@ builder = (
         state_class=SensorStateClass.MEASUREMENT,
         translation_key="orp_raw",
         fallback_name="ORP (raw, /10?)",
+    )
+    # --- DP 2: ruled out as pH (see header), kept raw for reference ---
+    .tuya_sensor(
+        dp_id=2,
+        attribute_name="dp_2",
+        type=t.uint32_t,
+        entity_type=EntityType.DIAGNOSTIC,
+        state_class=SensorStateClass.MEASUREMENT,
+        translation_key="dp_2",
+        fallback_name="DP 2 (not pH)",
     )
     .tuya_sensor(
         dp_id=5,

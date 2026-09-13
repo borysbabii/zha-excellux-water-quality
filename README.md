@@ -51,13 +51,20 @@ for the capture method and the confirmation tests.
 |----|---------|---------|--------|
 | 124 | TDS (ppm) | raw | **confirmed** |
 | 127 | EC (µS/cm) | raw | **confirmed** — DP 127 = 2 × DP 124, matching TDS = 0.5 × EC |
-| 2 | pH | ÷10? | candidate |
 | 118 | ORP (mV) | ÷10? | candidate |
 | 4 | Battery (%) | raw | duplicate of the standard battery entity |
-| 5 | temperature? | — | candidate, but stays ~25 (raw ~2500) even in water known to be warmer, so it does **not** track water temperature |
+| 2 | not pH | — | was a pH candidate; stays in a 50–55 band and rose under strong acid, so **not** pH |
+| 5 | not temperature | — | stays ~25 (raw ~2500) even in water known to be warmer, so it does **not** track water temperature |
 | 1 | unknown | — | does not collapse in air, so not a live probe |
 | 101, 108–132 | alarm limits | — | constant, exposed as diagnostics |
 | 112, 117, 126, 130, 133 | mode flags | — | enum / bool |
+
+**pH, salinity and free chlorine are not identified** over Zigbee on this unit.
+Under strong acid (lemon, vinegar) TDS and EC spiked as expected, but no live
+datapoint fell the way pH must. Either this model does not stream those probes,
+or they hide in a datapoint that only updates on the app/display. If you can read
+per-parameter values off the screen and match them to raw datapoints, please open
+an issue.
 
 ### How the labels were found
 
