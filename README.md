@@ -51,10 +51,10 @@ for the capture method and the confirmation tests.
 |----|---------|---------|--------|
 | 124 | TDS (ppm) | raw | **confirmed** |
 | 127 | EC (µS/cm) | raw | **confirmed** — DP 127 = 2 × DP 124, matching TDS = 0.5 × EC |
-| 5 | Temperature (°C) | ÷100 | probable |
 | 2 | pH | ÷10? | candidate |
 | 118 | ORP (mV) | ÷10? | candidate |
 | 4 | Battery (%) | raw | duplicate of the standard battery entity |
+| 5 | temperature? | — | candidate, but stays ~25 (raw ~2500) even in water known to be warmer, so it does **not** track water temperature |
 | 1 | unknown | — | does not collapse in air, so not a live probe |
 | 101, 108–132 | alarm limits | — | constant, exposed as diagnostics |
 | 112, 117, 126, 130, 133 | mode flags | — | enum / bool |
@@ -64,10 +64,12 @@ for the capture method and the confirmation tests.
 - **TDS and EC**: the only two datapoints that fall to ~0 when the probe leaves
   the water. Their ratio is a constant 1:2 across readings (98/196, 249/499),
   which is the standard TDS(ppm) = 0.5 × EC(µS/cm) relationship.
-- **Temperature**: the one datapoint that stays steady between water and air
-  (~2550 → 25.5 °C at ÷100).
 - **ORP**: dropped after switching from tap water to carbon-filtered water,
   which fits chlorine removal lowering the oxidation-reduction potential.
+
+DP 5 looked like temperature at first (raw ~2500 → 25 °C at ÷100), but it stays
+near 25 even in water the owner confirmed was warmer than 25 °C. So it does not
+track the water temperature and is left raw.
 
 ## Help wanted
 

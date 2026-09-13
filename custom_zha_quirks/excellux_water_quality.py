@@ -13,10 +13,13 @@ Status of each DP:
   * DP 124 -> TDS   (ppm)      CONFIRMED
   * DP 127 -> EC    (uS/cm)    CONFIRMED (DP 127 == 2 x DP 124, the standard
                                TDS = 0.5 x EC relationship)
-  * DP 5   -> temperature      PROBABLE, divisor 100 (reads ~25 C at room temp)
   * DP 2   -> pH               CANDIDATE, divisor 10  (reads ~5.5)
   * DP 118 -> ORP   (mV)       CANDIDATE, divisor 10  (reads ~550 mV, drops
                                after carbon filtering, which fits chlorine loss)
+  * DP 5   -> unknown          CANDIDATE for temperature, but stays ~25 (raw
+                               ~2500) even in water known to be warmer than
+                               25 C, so it does NOT track water temperature.
+                               Left raw.
   * DP 1   -> unknown          does NOT collapse in air, so not a live probe
   * others (constant)          alarm limits and mode flags, exposed as
                                diagnostics so you can compare with your display
@@ -35,7 +38,7 @@ Install:
 """
 
 import zigpy.types as t
-from zhaquirks.builder import EntityType, SensorDeviceClass, SensorStateClass
+from zhaquirks.builder import EntityType, SensorStateClass
 from zhaquirks.tuya.builder import TuyaQuirkBuilder
 from zigpy.zcl.clusters.closures import DoorLock
 
@@ -68,18 +71,6 @@ builder = (
         translation_key="ec",
         fallback_name="EC",
     )
-    # --- probable measurement ---
-    .tuya_sensor(
-        dp_id=5,
-        attribute_name="temperature",
-        type=t.uint32_t,
-        divisor=100,
-        unit="°C",
-        device_class=SensorDeviceClass.TEMPERATURE,
-        state_class=SensorStateClass.MEASUREMENT,
-        translation_key="temperature",
-        fallback_name="Temperature",
-    )
     # --- candidate measurements, exposed raw so you can confirm the divisor ---
     .tuya_sensor(
         dp_id=2,
@@ -96,6 +87,14 @@ builder = (
         state_class=SensorStateClass.MEASUREMENT,
         translation_key="orp_raw",
         fallback_name="ORP (raw, /10?)",
+    )
+    .tuya_sensor(
+        dp_id=5,
+        attribute_name="dp_5",
+        type=t.uint32_t,
+        entity_type=EntityType.DIAGNOSTIC,
+        translation_key="dp_5",
+        fallback_name="DP 5 (temperature? does not track)",
     )
     .tuya_sensor(
         dp_id=1,
