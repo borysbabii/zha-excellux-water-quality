@@ -93,6 +93,9 @@ builder = (
         attribute_name="dp_5",
         type=t.uint32_t,
         entity_type=EntityType.DIAGNOSTIC,
+        # Keep MEASUREMENT so existing long-term statistics continue; the value
+        # is a raw number of an unknown quantity, not confirmed temperature.
+        state_class=SensorStateClass.MEASUREMENT,
         translation_key="dp_5",
         fallback_name="DP 5 (temperature? does not track)",
     )
