@@ -51,13 +51,18 @@ for the capture method and the confirmation tests.
 |----|---------|---------|--------|
 | 124 | TDS (ppm) | raw | **confirmed** |
 | 127 | EC (µS/cm) | raw | **confirmed** — DP 127 = 2 × DP 124, matching TDS = 0.5 × EC |
+| 5 | Temperature (°C) | ÷100 | **confirmed** — slow, but tracked ambient over 3 days |
+| 1 | Temperature (°C) | ÷10 | **confirmed** — same reading as DP 5, coarser (DP 1 = DP 5 ÷ 10) |
 | 118 | ORP (mV) | ÷10? | candidate |
 | 4 | Battery (%) | raw | duplicate of the standard battery entity |
 | 2 | not pH | — | was a pH candidate; stays in a 50–55 band and rose under strong acid, so **not** pH |
-| 5 | not temperature | — | stays ~25 (raw ~2500) even in water known to be warmer, so it does **not** track water temperature |
-| 1 | unknown | — | does not collapse in air, so not a live probe |
 | 101, 108–132 | alarm limits | — | constant, exposed as diagnostics |
 | 112, 117, 126, 130, 133 | mode flags | — | enum / bool |
+
+**Temperature is slow.** DP 5 (÷100) and DP 1 (÷10) report the same temperature
+and barely move during a brief hot/cold dip, so a quick test looks like a
+failure. Over hours they track ambient closely — e.g. 21 °C on a cool morning,
+24–27 °C during the day. Judge it by the trend, not by seconds.
 
 **pH, salinity and free chlorine are not identified** over Zigbee on this unit.
 Under strong acid (lemon, vinegar) TDS and EC spiked as expected, but no live
@@ -74,9 +79,11 @@ an issue.
 - **ORP**: dropped after switching from tap water to carbon-filtered water,
   which fits chlorine removal lowering the oxidation-reduction potential.
 
-DP 5 looked like temperature at first (raw ~2500 → 25 °C at ÷100), but it stays
-near 25 even in water the owner confirmed was warmer than 25 °C. So it does not
-track the water temperature and is left raw.
+- **Temperature**: DP 5 (÷100) and DP 1 (÷10) report the same temperature. They
+  respond slowly, so a brief warm dip barely moves them — which first looked like
+  a failure. But over three days they tracked ambient together (21 °C cool
+  morning, 24–27 °C daytime), and they agree at every reading. Judge temperature
+  by the multi-hour trend, not a quick dip.
 
 ## Help wanted
 

@@ -13,18 +13,18 @@ Status of each DP:
   * DP 124 -> TDS   (ppm)      CONFIRMED
   * DP 127 -> EC    (uS/cm)    CONFIRMED (DP 127 == 2 x DP 124, the standard
                                TDS = 0.5 x EC relationship)
+  * DP 5   -> temperature (C)  CONFIRMED, divisor 100. Slow-responding: it does
+                               not follow brief dips, but over 3 days it tracked
+                               ambient (21 C cool morning, 24-27 C daytime/warm).
+  * DP 1   -> temperature (C)  CONFIRMED, divisor 10. Same reading as DP 5 at
+                               coarser resolution; the two agree and move
+                               together (DP 1 = DP 5 / 10).
   * DP 118 -> ORP   (mV)       CANDIDATE, divisor 10  (reads ~550 mV, drops
                                after carbon filtering, which fits chlorine loss)
   * DP 2   -> unknown          was a pH CANDIDATE, but stays in a tight 50-55
                                band and even rose slightly under strong acid
                                (lemon, vinegar). pH must fall with acid, so
                                DP 2 is NOT pH. Left raw.
-  * DP 5   -> unknown          CANDIDATE for temperature, but stays ~25 (raw
-                               ~2500) even in water known to be warmer than
-                               25 C, so it does NOT track water temperature.
-                               Left raw.
-  * DP 1   -> unknown          does NOT collapse in air, so not a live probe.
-                               No clean pH response either.
   * pH / salinity / chlorine   NOT identified over Zigbee on this unit. No live
                                datapoint fell with acid the way pH must.
   * others (constant)          alarm limits and mode flags, exposed as
@@ -44,7 +44,7 @@ Install:
 """
 
 import zigpy.types as t
-from zhaquirks.builder import EntityType, SensorStateClass
+from zhaquirks.builder import EntityType, SensorDeviceClass, SensorStateClass
 from zhaquirks.tuya.builder import TuyaQuirkBuilder
 from zigpy.zcl.clusters.closures import DoorLock
 
@@ -96,24 +96,30 @@ builder = (
         translation_key="dp_2",
         fallback_name="DP 2 (not pH)",
     )
+    # --- temperature: slow-responding, confirmed over 3 days of ambient trend ---
     .tuya_sensor(
         dp_id=5,
-        attribute_name="dp_5",
+        attribute_name="temperature",
         type=t.uint32_t,
-        entity_type=EntityType.DIAGNOSTIC,
-        # Keep MEASUREMENT so existing long-term statistics continue; the value
-        # is a raw number of an unknown quantity, not confirmed temperature.
+        divisor=100,
+        unit="°C",
+        device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
-        translation_key="dp_5",
-        fallback_name="DP 5 (temperature? does not track)",
+        translation_key="temperature",
+        fallback_name="Temperature",
     )
+    # DP 1 is the same temperature at coarser /10 resolution; it tracks DP 5.
     .tuya_sensor(
         dp_id=1,
-        attribute_name="dp_1",
+        attribute_name="temperature_coarse",
         type=t.uint32_t,
+        divisor=10,
+        unit="°C",
+        device_class=SensorDeviceClass.TEMPERATURE,
         entity_type=EntityType.DIAGNOSTIC,
-        translation_key="dp_1",
-        fallback_name="DP 1 (unknown)",
+        state_class=SensorStateClass.MEASUREMENT,
+        translation_key="temperature_coarse",
+        fallback_name="Temperature (coarse, /10)",
     )
 )
 
