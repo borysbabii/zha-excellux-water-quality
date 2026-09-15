@@ -105,6 +105,11 @@ python3 tools/parse_tuya.py ha-debug.log 0x2A17
 It prints each DP, its type, the distinct values seen, and a chronological tail.
 Use it to find which datapoints move when you change the water.
 
+## Filter health
+
+A ready-made [filter rejection %% sensor](docs/rejection-sensor.md) shows how much
+your RO / filter removes, live, from the TDS reading.
+
 ## Compatibility
 
 Written against Home Assistant `2026.9.2` with `zha` / `zha-quirks` `2.2.2`,
