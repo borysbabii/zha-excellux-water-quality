@@ -87,10 +87,10 @@ an issue.
 
 ## Help wanted
 
-The pH divisor, the ORP divisor, DP 1, and the salinity / free-chlorine
-datapoints are not confirmed. If you own this device, put the probe in water,
-read the on-screen values, and open an issue or PR with the display readings
-next to the raw DP values. That lets us finish the map.
+The ORP divisor is unconfirmed, and pH, salinity and free chlorine are not
+identified over Zigbee on this unit at all. If you own this device, put the probe
+in water, read the on-screen values, and open an issue or PR with the display
+readings next to the raw DP values. That lets us finish the map.
 
 ## Tools
 
@@ -107,7 +107,7 @@ Use it to find which datapoints move when you change the water.
 
 ## Filter health
 
-A ready-made [filter rejection %% sensor](docs/rejection-sensor.md) shows how much
+A ready-made [filter rejection % sensor](docs/rejection-sensor.md) shows how much
 your RO / filter removes, live, from the TDS reading.
 
 ## Compatibility
